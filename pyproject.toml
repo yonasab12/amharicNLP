@@ -1,0 +1,31 @@
+[project]
+name = "amharic-nlp"
+version = "0.1.0"
+description = "An Amharic NLP toolkit with tokenization, normalization, and sentiment analysis."
+authors = [
+    { name = "Yonas Abebe", email = "abebeyonas88@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+
+# Optional keywords for better search on PyPI
+keywords = ["Amharic", "NLP", "tokenizer", "normalizer", "sentiment analysis"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Natural Language :: Amharic",
+    "Topic :: Text Processing :: Linguistic"
+]
+
+# Optional: define dependencies
+dependencies = [
+    "numpy",
+    "transformers",
+    "torch",
+    "regex"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

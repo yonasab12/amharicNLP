@@ -1,0 +1,58 @@
+# === Python Bytecode ===
+__pycache__/
+*.py[cod]
+
+# === Virtual Environments ===
+.venv/
+venv/
+env/
+*.env
+
+# === Jupyter ===
+.ipynb_checkpoints/
+
+# === ML & NLP Model Files ===
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.ckpt
+*.bin
+*.model
+*.vec
+
+# === Hugging Face & Tokenizers ===
+*.cache/
+tokenizer_config.json
+vocab.txt
+merges.txt
+special_tokens_map.json
+
+# === Logs & Outputs ===
+*.log
+runs/
+logs/
+
+# === Large Data & Compressed Files ===
+*.csv
+*.tsv
+*.jsonl
+*.gz
+*.zip
+*.tar.gz
+
+# === IDE & System Files ===
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# === Build/Packaging ===
+build/
+dist/
+*.egg-info/
+
+# === Testing ===
+.pytest_cache/
+.coverage
+htmlcov/

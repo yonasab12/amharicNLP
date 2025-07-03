@@ -1,6 +1,9 @@
-# amharicNLP/__init__.py
+from .cleaner import AmharicCleaner
+from .normalizer import AmharicNormalizer
+from .lemmatizer import AmharicLemmatizer
+from .stemmer import AmharicStemmer
+from.utils import AmharicLanguageDetector
+from .stopwrod import AmharicStopwordProcessor
 
-from .preprocess import AmharicNormalizer
 
-__version__ = "1.0.0"
-__all__ = ["AmharicNormalizer"]
+__all__ = ['AmharicCleaner', 'AmharicNormalizer', 'AmharicLemmatizer', 'AmharicStemmer','AmharicLanguageDetector', 'AmharicStopwordProcessor','AmharicLemmatizer']
