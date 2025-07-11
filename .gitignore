@@ -60,3 +60,10 @@ dist/
 build/
 *.egg-info/
 __pycache__/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
