@@ -1,45 +1,54 @@
-from resources.cleaner import AmharicCleaner
-from resources.normalizer import AmharicNormalizer
-from resources.lemmatizer import AmharicLemmatizer
-from resources.stemmer import AmharicStemmer
-from resources.utils import AmharicLanguageDetector
-from resources.stopwrod import AmharicStopwordProcessor
 
+
+from amharicNLP.resources.cleaner import AmharicCleaner
+from amharicNLP.resources.normalizer import AmharicNormalizer
+from amharicNLP.resources.lemmatizer import AmharicLemmatizer
+from amharicNLP.resources.stemmer import AmharicStemmer           
+from amharicNLP.resources.stopwrod import AmharicStopwordProcessor
+from amharicNLP.resources.tokenizer import AmharicWordTokenizer
 
 # Sample Amharic text
-sample_text = "በአገራችን ኢትዮጵያ �ላ ያሉ ተማሪዎች በትምህርት ላይ ትኩረት ማድረግ አለባቸው። 123 ቁጥር!"
+sample_text = "በአገራችን ኢትዮጵያ <h1/> �ላ ያሉ ተማሪዎች በትምህርት ላይ ትኩረት ማድረግ አለባቸው። 123 ቁጥር! በላይ ዘለቀ ጀግና የኢትዮጵያ አርበኛ ነበር።"
+
 
 # Initialize all processors
 cleaner = AmharicCleaner()
 normalizer = AmharicNormalizer()
 lemmatizer = AmharicLemmatizer()
 stemmer = AmharicStemmer()
-language_detector = AmharicLanguageDetector()
 stopword_processor = AmharicStopwordProcessor()
 
 # Apply each processing step
 print("Original Text:", sample_text)
 
 # 1. Clean the text
-cleaned_text = cleaner.clean(sample_text)
-print("\nAfter Cleaning:", cleaned_text)
+cleaned_texth = cleaner.remove_html(sample_text)
+
+print("\nAfter HTML Removal:", cleaned_texth)
+cleaned_textn = cleaner.remove_noise(cleaned_texth)
+print("\nAfter Cleaning:", cleaned_textn)
+
+
+
 
 # 2. Normalize the text
-normalized_text = normalizer.normalize(cleaned_text)
-print("\nAfter Normalization:", normalized_text)
+normalized_text = normalizer.normalize_amharic_chars(cleaned_textn)
+normalized_text2=normalizer.normalize_punctuation_spacing(normalized_text)
+                                                
+normalized_text3=normalizer.expand_abbreviations(normalized_text2)
+print("\nAfter Normalization:", normalized_text3)
 
-# 3. Language detection
-is_amharic = language_detector.is_amharic(normalized_text)
-print("\nIs Amharic?", is_amharic)
+
 
 # 4. Stopword removal
-without_stopwords = stopword_processor.remove_stopwords(normalized_text)
+without_stopwords = stopword_processor.remove_stopwords(normalized_text3)
 print("\nAfter Stopword Removal:", without_stopwords)
 
+stem= stemmer.stem_amharic(without_stopwords)
+print("\nAfter Stemming:", stem)
 # 5. Lemmatization
-lemmatized_text = [lemmatizer.lemmatize(word) for word in without_stopwords.split()]
-print("\nAfter Lemmatization:", " ".join(lemmatized_text))
+#lemmatized_text = [lemmatizer.lemmatize(word) for word in without_stopwords.split()]
+#print("\nAfter Lemmatization:", " ".join(lemmatized_text))
 
 # 6. Stemming
-stemmed_text = [stemmer.stem(word) for word in without_stopwords.split()]
-print("\nAfter Stemming:", " ".join(stemmed_text))
+##print("\nAfter Stemming:", " ".join(stemmed_text))

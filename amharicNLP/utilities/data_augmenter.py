@@ -1,7 +1,11 @@
 import random
-from ..amharicNLP.resources.tokenizer import AmharicWordTokenizer
-from  ..amharicNLP .resources.cleaner import AmharicCleaner
 
+
+from amharicNLP.resources.tokenizer import AmharicWordTokenizer
+from amharicNLP.resources.cleaner import AmharicCleaner
+from amharicNLP.resources.normalizer import AmharicNormalizer
+from amharicNLP.resources.lemmatizer import AmharicLemmatizer
+from amharicNLP.resources.stemmer import AmharicStemmer        
 # Initialize class-based components
 tokenizer = AmharicWordTokenizer()
 cleaner = AmharicCleaner()

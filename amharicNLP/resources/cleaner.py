@@ -1,4 +1,4 @@
-from utils import is_amharic_char
+from.utils import AmharicLanguageDetector
 import re
 
 class AmharicCleaner:
@@ -48,7 +48,7 @@ from utils import is_amharic_char
         
         if keep_amharic:
             text = ''.join(char for char in text if (
-                is_amharic_char(char) or 
+                AmharicLanguageDetector.is_amharic_char(char) or 
                 char.isdigit() or 
                 char in '.,!?;:- ' or
                 char in '/.'  
