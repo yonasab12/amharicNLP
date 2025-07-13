@@ -1,0 +1,4 @@
+recursive-include amharicNLP/resources *
+recursive-include amharicNLP/data *
+include LICENSE
+include README.md

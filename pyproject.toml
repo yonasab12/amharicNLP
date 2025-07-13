@@ -1,6 +1,6 @@
 [project]
 name = "amharicNLP"
-version = "0.0.2"
+version = "0.0.3"
 description = "A Python package for Amharic NLP tasks including tokenization, normalization, and sentiment analysis."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -34,5 +34,11 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-data]
-amharicNLP = ["data/*.txt"]
+amharicNLP = [
+    "data/*.txt",
+    "resources/wordnet/*.json",  # Add this line
+    "resources/*.json"           # Optional: include all JSON files in resources
+]
 
+[tool.setuptools.packages.find]
+where = ["."]  # Make sure it finds all packages

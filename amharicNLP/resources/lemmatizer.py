@@ -1,6 +1,7 @@
 import os
 import json
-
+import amharicNLP
+print(amharicNLP.__file__)
 class AmharicLemmatizer:
     def __init__(self, wordnet_path=None):
         # Handle direct dictionary input
