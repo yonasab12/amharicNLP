@@ -14,7 +14,6 @@ keywords = ["Amharic", "NLP", "tokenizer", "normalizer", "sentiment analysis"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
-    "Natural Language :: Amharic",
     "Topic :: Text Processing :: Linguistic"
 ]
 
