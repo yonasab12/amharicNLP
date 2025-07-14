@@ -40,5 +40,3 @@ amharicNLP = [
     "resources/*.json"           # Optional: include all JSON files in resources
 ]
 
-[tool.setuptools.packages.find]
-where = ["."]  # Make sure it finds all packages
