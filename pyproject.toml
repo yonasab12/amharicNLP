@@ -1,7 +1,15 @@
 [project]
 name = "amharicNLP"
-version = "0.0.5"
-description = "A Python package for Amharic NLP tasks including tokenization, normalization, and sentiment analysis."
+version = "0.0.7"
+description = """
+amharicNLP is a Python package for Amharic Natural Language Processing (NLP) and text preprocessing. 
+It provides tools for Amharic tokenization, text normalization, stopword removal, stemming, 
+and sentiment analysis. The package is designed to support Ethiopian languages, with a focus 
+on Amharic text processing for machine learning, deep learning, and AI applications. 
+It is useful for Amharic data preprocessing, Amharic text classification, information retrieval, 
+and other Amharic NLP tasks such as word segmentation, language modeling, and linguistic analysis.
+"""
+
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
@@ -10,12 +18,36 @@ authors = [
   { name = "Yonas Abebe", email = "abebeyonas88@gmail.com" }
 ]
 
-keywords = ["Amharic", "NLP", "tokenizer", "normalizer", "sentiment analysis"]
+keywords = [
+    "Amharic",
+    "NLP",
+    "Amharic NLP",
+    "Amharic preprocessing",
+    "Amharic tokenizer",
+    "Amharic stopwords",
+    "Amharic sentiment analysis",
+    "Amharic text processing",
+    "Ethiopian NLP",
+    "tokenizer",
+    "normalizer",
+    "sentiment analysis",
+    "amharicnlp",
+    "amharicprocessing",
+    "amharicnltk",
+    "tokinization",   # keep common misspelling for search
+    "amharicstopword"
+]
+
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
-    "Topic :: Text Processing :: Linguistic"
+    "Topic :: Text Processing :: Linguistic",
+    "Natural Language :: Amharic",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License"
 ]
+
 
 dependencies = [
     "numpy",
