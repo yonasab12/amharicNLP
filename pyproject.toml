@@ -1,6 +1,6 @@
 [project]
 name = "amharicNLP"
-version = "0.0.7"
+version = "0.0.8"
 description = """
 amharicNLP is a Python package for Amharic Natural Language Processing (NLP) and text preprocessing. 
 It provides tools for Amharic tokenization, text normalization, stopword removal, stemming, 
@@ -43,7 +43,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
     "Topic :: Text Processing :: Linguistic",
-    "Natural Language :: Amharic",
+    "Natural Language :: Other",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License"
 ]
