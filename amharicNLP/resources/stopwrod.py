@@ -1,7 +1,7 @@
 
 
-from amharic_stopword import data as stop_words
 
+from .amharic_stopword import data as stop_words
 class  AmharicStopwordProcessor:
     def __init__(self):
         self.stop_words = set(stop_words)

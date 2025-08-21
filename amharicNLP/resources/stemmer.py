@@ -1,6 +1,6 @@
 import re
 import ast
-from amharic_stopword import data as stop_words
+from .amharic_stopword import data as stop_words
 
 class AmharicLemmatizer:
     def __init__(self, wordnet_data=None):
