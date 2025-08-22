@@ -1,36 +1,12 @@
 import re
-import ast
+from . import data_lemma
 from .amharic_stopword import data as stop_words
 
 class AmharicLemmatizer:
     def __init__(self, wordnet_data=None):
         if wordnet_data is None:
-            # Load default WordNet data from the package
-            import amharicNLP
-            import os
-            
-            # Get the directory of the amharicNLP package
-            package_dir = os.path.dirname(amharicNLP.__file__)
-            wordnet_path = os.path.join(package_dir, 'data_lemma.py')
-            
-            # Read and parse the Python file
-            with open(wordnet_path, 'r', encoding='utf-8') as f:
-                file_content = f.read()
-                
-            # Parse the Python file to extract the wordnet_data variable
-            parsed = ast.parse(file_content)
-            for node in parsed.body:
-                if isinstance(node, ast.Assign):
-                    for target in node.targets:
-                        if isinstance(target, ast.Name) and target.id == 'wordnet_data':
-                            # Use ast.literal_eval to safely evaluate the expression
-                            self.wordnet_data = ast.literal_eval(node.value)
-                            break
-                    else:
-                        continue
-                    break
-            else:
-                self.wordnet_data = []
+            # Access the data directly from the imported module
+            self.wordnet_data = data_lemma.data
         else:
             self.wordnet_data = wordnet_data
 
@@ -121,4 +97,4 @@ class AmharicStemmer:
     def process_text(self, text):
         tokens = text.split()
         cleaned = [word for word in tokens if word not in stop_words]
-        return [self.process_word(word) for word in cleaned]
+        return [self.stemaize(word) for word in cleaned]

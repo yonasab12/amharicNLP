@@ -1,14 +1,11 @@
 import os
-import json
-import amharicNLP
-print(amharicNLP.__file__)
+from . import data_lemma
+
 class AmharicLemmatizer:
     def __init__(self, wordnet_data=None):
         if wordnet_data is None:
-            # Load default WordNet data from the package
-            wordnet_path = os.path.join(os.path.dirname(__file__), 'data_lemma.py')
-            with open(wordnet_path, encoding='utf-8') as f:
-                self.wordnet_data = json.load(f)
+            # Access the data directly from the imported module
+            self.wordnet_data = data_lemma.data
         else:
             self.wordnet_data = wordnet_data
 
