@@ -2,7 +2,7 @@
 
 Amharic NLP Toolkit is a lightweight and easy-to-use Natural Language Processing (NLP) toolkit for Amharic.
 It provides tools for Amharic text preprocessing, tokenization, normalization, stopword removal, stemming, and sentiment analysis.
-Ideal for Amharic text processing, machine learning, deep learning, AI projects, and other Ethiopian language applications
+Ideal for Amharic text processing, machine learning, deep learning,amharic large language  model, AI projects, and other Ethiopian language applications
 
 
 ---
