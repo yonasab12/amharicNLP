@@ -20,7 +20,7 @@ Ideal for Amharic text processing, machine learning, deep learning, AI projects,
 
 🧰 Command Line Interface (CLI) – Easy integration into scripts and projects
 
-📚 Supports Amharic NLP for Machine Learning, Deep Learning, and AI applications
+📚 Supports Amharic NLP for Machine Learning, Deep Learning
 
 ---
 
