@@ -28,7 +28,7 @@ Ideal for Amharic text processing, machine learning, deep learning, AI projects,
 
 # Option 1: Install from GitHub (latest development version)
 git clone https://github.com/yonasab12/amharicNLP.git
-cd amharic-nlp
+cd amharicNLP
 pip install .
 
 # Option 2: Install from PyPI (stable release)

@@ -11082,7 +11082,7 @@ data=[
         "lemma": "አጫራች",
         "example": ["እያጫረተ", "እያበላለጠ የሚሽጥ"]
     },
-    Here's the Python data structure for the additional Amharic text you provided, following the same format:
+
 
     {
         "lemma": "እንቀት",
