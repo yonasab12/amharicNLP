@@ -17,8 +17,7 @@ Ideal for Amharic text processing, machine learning, deep learning, AI projects,
 🌱 Stemming & Lemmatization – Reduce words to base form for NLP
 
 😊 Sentiment Analysis – Simple positive/negative classification for Amharic text
-
-🧰 Command Line Interface (CLI) – Easy integration into scripts and projects
+ 
 
 📚 Supports Amharic NLP for Machine Learning, Deep Learning
 
