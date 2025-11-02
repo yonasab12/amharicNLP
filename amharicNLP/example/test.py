@@ -41,14 +41,13 @@ print("\nAfter Normalization:", normalized_text3)
 
 
 # 4. Stopword removal
-without_stopwords = stopword_processor.remove_stopwords(normalized_text3)
+without_stopwords = stopword_processor.remove(normalized_text3)
 print("\nAfter Stopword Removal:", without_stopwords)
 
-stem= stemmer.stem_amharic(without_stopwords)
-print("\nAfter Stemming:", stem)
 # 5. Lemmatization
-#lemmatized_text = [lemmatizer.lemmatize(word) for word in without_stopwords.split()]
-#print("\nAfter Lemmatization:", " ".join(lemmatized_text))
+lemmatized_text = lemmatizer.lemmatize(sample_text)
+print("\nAfter Lemmatization:", lemmatized_text)
 
-# 6. Stemming
-##print("\nAfter Stemming:", " ".join(stemmed_text))
+
+stem = [stemmer.stemaize(word) for word in without_stopwords]  
+print("\nAfter Stemming:", stem)
