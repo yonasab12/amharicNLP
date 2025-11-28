@@ -194,7 +194,7 @@ With only a few lines of code, you can prepare Amharic data for machine learning
 
 # ✍️ **Author**
 
-**👤 Yonas Aebebe**
+**👤 Yonas Abebe**
 
 Exploring Amharic NLP, machine learning, and AI tools for Ethiopian languages.
 GitHub: **yonasab12**
