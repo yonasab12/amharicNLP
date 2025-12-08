@@ -2,47 +2,49 @@ import re
 
 class AmharicWordTokenizer:
     """
-    Tokenizer for Amharic text.
-    Handles Amharic punctuation, contractions, and parentheses/brackets.
+    Improved Tokenizer for Amharic text.
+    Handles punctuation, opening/closing quotes, contractions, and parentheses/brackets.
     """
-    
-    # Amharic starting quotes and punctuation
-    STARTING_QUOTES = [
-        (re.compile(r'^«'), r'`'),
-        (re.compile(r'^»'), r"'"),
-        (re.compile(r'^"'), r''),
+
+    # Opening quotes anywhere attached
+    OPENING_QUOTES = [
+        (re.compile(r'([“"`«])([^\s])'), r'\1 \2'),  # space after the quote
+    ]
+
+    # Closing quotes anywhere attached
+    CLOSING_QUOTES = [
+        (re.compile(r'([^\s])([”"\’])'), r'\1 \2'),  # space before the quote
     ]
 
     # Amharic punctuation marks
-
- 
-    PUNCTUATION= [ 
-        (re.compile(r'\.'), r' . '), 
+    PUNCTUATION = [
+        (re.compile(r'\.'), r' . '),
         (re.compile(r'፡'), r' ፡ '),
-        (re.compile(r'[!?]'), r' \g<0> '),  
+        (re.compile(r'[!?]'), r' \g<0> '),
         (re.compile(r'።'), r' ። '),
         (re.compile(r'፣'), r' ፣ '),
         (re.compile(r'፤'), r' ፤ '),
         (re.compile(r'[-–—]+'), r' \g<0> '),
     ]
 
-    # Parentheses and brackets (replace with labels)
-  
-                        
+    # Parentheses and brackets
     PARENS_BRACKETS = [
-       (re.compile(r'([\(\)\[\]\{\}])'), r' \1 ')
+        (re.compile(r'([\(\)\[\]\{\}])'), r' \1 ')
     ]
 
-
-    # Amharic contractions and compound words
+    # Contractions / attached prefixes
     CONTRACTIONS = [
-        (re.compile(r'(?i)\b(የ|በ|ከ|ለ|ውስጥ|ላይ|በላይ)([^\s]+)\b'), r'\1 \2'),  # Prepositions
-        (re.compile(r'(?i)\b(እኔ|አንቺ|እሱ|እሷ)([^\s]+)\b'), r'\1 \2'),  # Pronouns
+        (re.compile(r'\b(የ|በ|ከ|ለ|ውስጥ|ላይ|በላይ)([^\s]+)\b'), r'\1 \2'),
+        (re.compile(r'\b(እኔ|አንቺ|እሱ|እሷ)([^\s]+)\b'), r'\1 \2'),
     ]
 
     def tokenize(self, text):
-        # Apply starting quotes
-        for regexp, substitution in self.STARTING_QUOTES:
+        # Separate opening quotes
+        for regexp, substitution in self.OPENING_QUOTES:
+            text = regexp.sub(substitution, text)
+
+        # Separate closing quotes
+        for regexp, substitution in self.CLOSING_QUOTES:
             text = regexp.sub(substitution, text)
 
         # Handle punctuation
@@ -60,5 +62,3 @@ class AmharicWordTokenizer:
         # Split on whitespace and return tokens
         tokens = text.strip().split()
         return tokens
-
-
