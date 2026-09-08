@@ -1,3 +1,2 @@
-re
 pytest
 pytest-cov

@@ -34,11 +34,15 @@ class AmharicWordTokenizer:
     ]
 
 
-    # Amharic contractions and compound words
-    CONTRACTIONS = [
-        (re.compile(r'(?i)\b(የ|በ|ከ|ለ|ውስጥ|ላይ|በላይ)([^\s]+)\b'), r'\1 \2'),  # Prepositions
-        (re.compile(r'(?i)\b(እኔ|አንቺ|እሱ|እሷ)([^\s]+)\b'), r'\1 \2'),  # Pronouns
-    ]
+    # NOTE: an earlier version of this tokenizer force-split every word
+    # starting with a preposition-like prefix (የ, በ, ከ, ለ, ...) into two
+    # tokens, e.g. "የካቲት" -> "የ ካቲት" or "በለስ" -> "በ ለስ". That is wrong for
+    # the (large) set of Amharic words that only coincidentally start with
+    # those letters, and it can't be done correctly without a lexicon.
+    # Splitting a bound prefix off a word is morphological analysis, not
+    # tokenization -- that's handled by AmharicStemmerprocess in
+    # stemmer.py, which strips prefixes/suffixes with a protected-word
+    # list and a minimum stem length instead of a blind regex.
 
     def tokenize(self, text):
         # Apply starting quotes
@@ -51,10 +55,6 @@ class AmharicWordTokenizer:
 
         # Replace parentheses/brackets
         for regexp, substitution in self.PARENS_BRACKETS:
-            text = regexp.sub(substitution, text)
-
-        # Split contractions and compound words
-        for regexp, substitution in self.CONTRACTIONS:
             text = regexp.sub(substitution, text)
 
         # Split on whitespace and return tokens

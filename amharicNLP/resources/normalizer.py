@@ -116,6 +116,11 @@ class AmharicNormalizer:
         """Normalize Unicode text to specified form (default: NFC)."""
         return unicodedata.normalize(form, text)
 
+    def normalize(self, text: str) -> str:
+        """Alias for normalize_amharic_chars (character-level normalization
+        only, e.g. ኣ -> አ). Kept as the short, discoverable entry point."""
+        return self.normalize_amharic_chars(text)
+
     def normalize_amharic_chars(self, text: str) -> str:
         """Normalize Amharic characters to their canonical forms with enhanced labialization handling."""
         normalized = []

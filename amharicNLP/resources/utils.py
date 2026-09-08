@@ -1,9 +1,11 @@
 class AmharicLanguageDetector:
+    @staticmethod
     def is_amharic_char(char: str) -> bool:
         """Check if a character is in the Amharic Unicode block."""
         # Amharic Unicode range: U+1200 to U+137F
         return '\u1200' <= char <= '\u137F'
 
+    @staticmethod
     def is_amharic_text(text: str, threshold: float = 0.7) -> bool:
         """
         Check if text is primarily Amharic.
