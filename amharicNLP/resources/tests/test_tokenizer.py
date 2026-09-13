@@ -13,3 +13,11 @@ class TestAmharicWordTokenizer:
         tok = AmharicWordTokenizer()
         tokens = tok.tokenize("ሰላም ነው።")
         assert tokens == ["ሰላም", "ነው", "።"]
+
+    def test_doubled_wordspace_is_one_full_stop_not_two_tokens(self):
+        # Regression test: "፡፡" (traditional doubled Ethiopic wordspace,
+        # equivalent to "።") was splitting into two separate "፡" tokens.
+        # Found by testing against real transcripts from the
+        # snapwre/amharic-speech dataset.
+        tok = AmharicWordTokenizer()
+        assert tok.tokenize("ብለዋል፡፡") == ["ብለዋል", "።"]

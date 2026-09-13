@@ -17,6 +17,13 @@ class AmharicWordTokenizer:
 
  
     PUNCTUATION= [ 
+        # "፡፡" (doubled Ethiopic wordspace) is a traditional sentence-final
+        # full stop, still common in news writing, equivalent to "።". Must
+        # run before the single-"፡" rule below or it splits into two
+        # separate spaced tokens. Same fix as normalizer.py's
+        # PUNCTUATION_NORMALIZATION (kept here too since this tokenizer can
+        # be used standalone, without going through the normalizer first).
+        (re.compile(r'፡፡'), '።'),
         (re.compile(r'\.'), r' . '), 
         (re.compile(r'፡'), r' ፡ '),
         (re.compile(r'[!?]'), r' \g<0> '),  
@@ -40,7 +47,7 @@ class AmharicWordTokenizer:
     # the (large) set of Amharic words that only coincidentally start with
     # those letters, and it can't be done correctly without a lexicon.
     # Splitting a bound prefix off a word is morphological analysis, not
-    # tokenization -- that's handled by AmharicStemmerprocess in
+    # tokenization -- that's handled by AmharicStemProcessor in
     # stemmer.py, which strips prefixes/suffixes with a protected-word
     # list and a minimum stem length instead of a blind regex.
 

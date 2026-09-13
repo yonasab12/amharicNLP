@@ -1,14 +1,10 @@
 [project]
 name = "amharicNLP"
-version = "1.4.1"
-description = """
-amharicNLP is a Python package for Amharic Natural Language Processing (NLP) and text preprocessing. 
-It provides tools for Amharic tokenization, text normalization, stopword removal, stemming, 
-and sentiment analysis. The package is designed to support Ethiopian languages, with a focus 
-on Amharic text processing for machine learning, deep learning, and AI applications. 
-It is useful for Amharic data preprocessing, Amharic text classification, information retrieval, 
-and other Amharic NLP tasks such as word segmentation, language modeling, and linguistic analysis.
-"""
+version = "1.7.0"
+# PEP 621 expects `description` to be a short, single-line summary (it maps
+# to the "Summary" metadata field); the multi-paragraph pitch belongs in the
+# README, which is already wired up as the long description below.
+description = "A dependency-light, rule-based NLP and text-preprocessing toolkit for Amharic."
 
 readme = "README.md"
 requires-python = ">=3.8"
@@ -67,6 +63,22 @@ neural = [
     "transformers>=4.30",
     "torch",
 ]
+# Text-to-speech (facebook/mms-tts-amh) and speech-to-text
+# (agkphysics/wav2vec2-large-xlsr-53-amharic). Kept separate from `neural`
+# since audio I/O deps (scipy, librosa) are a different weight class from
+# just running a text model, and most users won't need both.
+speech = [
+    "transformers>=4.33",  # 4.33+ for VitsModel (TTS)
+    "torch",
+    "scipy",
+    "librosa",
+]
+# For amharicNLP.dataset_prep.AmharicDatasetPreprocessor.load() -- loading
+# a dataset from the Hugging Face Hub to preprocess (e.g. voice/ASR/TTS
+# training data, an LLM pretraining corpus, a sentiment dataset).
+datasets = [
+    "datasets>=2.14",
+]
 dev = [
     "pytest",
     "pytest-cov",
@@ -87,9 +99,11 @@ build-backend = "setuptools.build_meta"
 include-package-data = true
 
 [tool.setuptools.package-data]
-amharicNLP = [
-    "data/*.txt",
-    "resources/wordnet/*.json",  # Add this line
-    "resources/*.json"           # Optional: include all JSON files in resources
-]
+# Previously listed "data/*.txt", "resources/wordnet/*.json" and
+# "resources/*.json" -- none of those paths exist in this package, so those
+# entries matched nothing and were dead configuration. The actual data
+# files that exist and are used at import time (amharic_stopword.py,
+# data_lemma.py) are plain .py modules, not data files, so they're already
+# included as regular package code and don't need a package-data entry.
+amharicNLP = []
 

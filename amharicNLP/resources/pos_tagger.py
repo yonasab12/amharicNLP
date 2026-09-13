@@ -48,8 +48,6 @@ ground truth.
 
 import re
 
-from .stemmer import AmharicStemmerprocess
-
 # ---------------------------------------------------------------------------
 # Closed-class lexicons (hand-curated, exact match only)
 # ---------------------------------------------------------------------------
@@ -177,9 +175,6 @@ class AmharicPOSTagger:
         tagger.tag_word("አልሄደም")          # 'VERB'
         tagger.tag(["እኔ", "ኢትዮጵያዊ", "ነኝ"])  # [('እኔ','PRON'), ('ኢትዮጵያዊ','ADJ'), ('ነኝ','AUX')]
     """
-
-    def __init__(self):
-        self._stemmer = AmharicStemmerprocess()
 
     def _looks_verbal(self, word: str) -> bool:
         has_prefix = word.startswith(_VERB_PREFIXES)

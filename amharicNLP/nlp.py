@@ -28,9 +28,11 @@ from .resources import (
     AmharicCleaner,
     AmharicNormalizer,
     AmharicWordTokenizer,
+    AmharicSentenceSegmenter,
     AmharicStemmer,
     AmharicStopwordProcessor,
     AmharicPOSTagger,
+    AmharicSentimentAnalyzer,
 )
 
 
@@ -45,17 +47,20 @@ class Doc:
     """
 
     __slots__ = (
-        "text", "cleaned_text", "tokens", "stems", "pos_tags", "_neural",
-        "_sentiment", "_entities", "_embedding", "_subword_tokens",
+        "text", "cleaned_text", "tokens", "sentences", "stems", "pos_tags", "sentiment_lexicon",
+        "_neural", "_sentiment", "_entities", "_embedding", "_subword_tokens",
     )
 
     def __init__(self, text: str, cleaned_text: str, tokens: List[str],
-                 stems: List[str], pos_tags, neural=None):
+                 stems: List[str], pos_tags, sentiment_lexicon, neural=None,
+                 sentences: Optional[List[str]] = None):
         self.text = text
         self.cleaned_text = cleaned_text
         self.tokens = tokens
+        self.sentences = sentences or []  # sentence-segmented cleaned_text, see AmharicSentenceSegmenter
         self.stems = stems
         self.pos_tags = pos_tags  # list[(word, tag)] -- see AmharicPOSTagger
+        self.sentiment_lexicon = sentiment_lexicon  # dict, see AmharicSentimentAnalyzer -- rule-based, always available
         self._neural = neural  # AmharicNeuralPipeline instance, or None
         self._sentiment = None
         self._entities = None
@@ -120,9 +125,11 @@ class AmharicNLP:
         self.cleaner = AmharicCleaner()
         self.normalizer = AmharicNormalizer()
         self.tokenizer = AmharicWordTokenizer()
+        self.sentence_segmenter = AmharicSentenceSegmenter()
         self.stemmer = AmharicStemmer()
         self.stopwords = AmharicStopwordProcessor()
         self.pos_tagger = AmharicPOSTagger()
+        self.sentiment_analyzer = AmharicSentimentAnalyzer()
         self.remove_stopwords = remove_stopwords
 
         self._neural = None
@@ -134,6 +141,7 @@ class AmharicNLP:
         cleaned = self.cleaner.remove_noise(self.cleaner.remove_html(text))
         normalized = self.normalizer.normalize_text(cleaned)
         tokens = self.tokenizer.tokenize(normalized)
+        sentences = self.sentence_segmenter.split(normalized)
 
         if self.remove_stopwords:
             tokens_for_stem = [t for t in tokens if t not in self.stopwords.stop_words]
@@ -141,10 +149,12 @@ class AmharicNLP:
             tokens_for_stem = tokens
 
         stems = [self.stemmer.stemaize(t) for t in tokens_for_stem]
-        # POS tagging runs on the full (unfiltered) token list -- tagging
-        # needs function words (conjunctions, pronouns, adpositions) to be
-        # present, so it ignores remove_stopwords.
+        # POS tagging and lexicon sentiment run on the full (unfiltered)
+        # token list -- both need function words/negators present, so
+        # they ignore remove_stopwords.
         pos_tags = self.pos_tagger.tag(tokens)
+        sentiment_lexicon = self.sentiment_analyzer.analyze(tokens)
 
         return Doc(text=text, cleaned_text=normalized, tokens=tokens,
-                   stems=stems, pos_tags=pos_tags, neural=self._neural)
+                   sentences=sentences, stems=stems, pos_tags=pos_tags,
+                   sentiment_lexicon=sentiment_lexicon, neural=self._neural)

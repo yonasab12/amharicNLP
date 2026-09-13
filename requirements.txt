@@ -1,2 +1,10 @@
-pytest
-pytest-cov
+# Runtime dependency, matching [project.dependencies] in pyproject.toml.
+# pyproject.toml is the source of truth for packaging metadata; this file
+# exists for people who just want `pip install -r requirements.txt` to set
+# up a working amharicNLP without building the package.
+#
+# For development (running the test suite), see requirements-dev.txt.
+# For optional extras (neural, speech, datasets), see the
+# [project.optional-dependencies] table in pyproject.toml, e.g.:
+#   pip install amharicNLP[neural]
+amharic-tokenizer>=0.2.6

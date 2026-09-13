@@ -50,7 +50,7 @@ class AmharicLemmatizer:
 
 
 # ----------------- Stemmer Process -----------------
-class AmharicStemmerprocess:
+class AmharicStemProcessor:
     # Words that must never be stripped, either because stripping would
     # destroy their meaning or because they only coincidentally start/end
     # with an affix-like sequence.
@@ -216,11 +216,20 @@ class AmharicStemmerprocess:
         return result if len(result) >= self.min_stem_len else word
 
 
+# Backward-compatible alias: every other public class in this package is
+# AmharicXxx PascalCase (AmharicCleaner, AmharicNormalizer,
+# AmharicWordTokenizer, ...). "AmharicStemmerprocess" was the odd one out;
+# AmharicStemProcessor is now the canonical name, and this alias keeps
+# `from amharicNLP.resources.stemmer import AmharicStemmerprocess` working
+# for anyone already importing it directly.
+AmharicStemmerprocess = AmharicStemProcessor
+
+
 # ----------------- Combined Rule: Lemmatize → Stem -----------------
 class AmharicStemmer:
     def __init__(self, wordnet_data=None, min_stem_len: int = 2, max_passes: int = 1):
         self.lemmatizer = AmharicLemmatizer(wordnet_data)
-        self.stemmer = AmharicStemmerprocess(min_stem_len=min_stem_len, max_passes=max_passes)
+        self.stemmer = AmharicStemProcessor(min_stem_len=min_stem_len, max_passes=max_passes)
 
     def stemaize(self, word):
         """

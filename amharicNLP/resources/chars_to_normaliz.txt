@@ -1,3 +1,7 @@
+# Human-readable reference for AMHARIC_NORMALIZATION_MAP in normalizer.py.
+# Not loaded by any code at runtime -- kept as documentation of the intended
+# character-variant groupings the map implements.
+
 [ሃኅኃሐሓኻ] → ሀ  
 [ሑኁዅ] → ሁ  
 [ኂሒኺ] → ሂ  

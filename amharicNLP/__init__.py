@@ -3,6 +3,12 @@ from .wordnet import *
 from .utilities import *
 from .nlp import AmharicNLP, Doc
 from .subword import AmharicSubwordTokenizer
+from .speech import AmharicTTS, AmharicASR
+from .dataset_prep import AmharicDatasetPreprocessor
+from .corpus import AmharicCorpusProcessor, ValidationReport
+from .llm_dataset import AmharicLLMDatasetValidator, LLMValidationReport
+from .audio_dataset import AmharicAudioDatasetProcessor, SplitResult as AudioSplitResult
+from .voice_pipeline import AmharicVoicePipeline, VoiceTurnResult
 
 # NOTE: amharicNLP.example is intentionally NOT imported here. It used to be
 # ("from .example import *"), but example/test.py runs a full demo pipeline
@@ -19,12 +25,19 @@ from .subword import AmharicSubwordTokenizer
 
 _tokenizer = AmharicWordTokenizer()
 _normalizer = AmharicNormalizer()
+_sentence_segmenter = AmharicSentenceSegmenter()
 _neural_singleton = None
 
 
 def tokenize(text: str):
     """Tokenize Amharic text. Thin wrapper around AmharicWordTokenizer."""
     return _tokenizer.tokenize(text)
+
+
+def split_sentences(text: str):
+    """Split Amharic (or mixed Amharic/English) text into sentences.
+    Thin wrapper around AmharicSentenceSegmenter.split."""
+    return _sentence_segmenter.split(text)
 
 
 def normalize(text: str) -> str:

@@ -6,7 +6,7 @@ from amharicNLP.resources.cleaner import AmharicCleaner
 from amharicNLP.resources.normalizer import AmharicNormalizer
 from amharicNLP.resources.lemmatizer import AmharicLemmatizer
 from amharicNLP.resources.stemmer import AmharicStemmer
-from amharicNLP.resources.stopwrod import AmharicStopwordProcessor
+from amharicNLP.resources.stopword import AmharicStopwordProcessor
 from amharicNLP.resources.tokenizer import AmharicWordTokenizer
 
 
