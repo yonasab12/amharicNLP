@@ -1,6 +1,6 @@
 [project]
 name = "amharicNLP"
-version = "1.7.0"
+version = "2.0.0"
 # PEP 621 expects `description` to be a short, single-line summary (it maps
 # to the "Summary" metadata field); the multi-paragraph pitch belongs in the
 # README, which is already wired up as the long description below.
@@ -78,6 +78,27 @@ speech = [
 # training data, an LLM pretraining corpus, a sentiment dataset).
 datasets = [
     "datasets>=2.14",
+]
+# Optional framework integrations. None of these are required: amharicNLP
+# prepares data and hands it over, so the developer installs only the
+# framework they actually train in. Each is imported lazily at the point of
+# use (see amharicNLP/_optional.py), and a missing one raises an error that
+# names the exact pip command rather than a bare ModuleNotFoundError.
+pandas = [
+    "pandas",
+]
+parquet = [
+    "pandas",
+    "pyarrow",
+]
+torch = [
+    "torch",
+]
+tensorflow = [
+    "tensorflow",
+]
+sklearn = [
+    "scikit-learn",
 ]
 dev = [
     "pytest",

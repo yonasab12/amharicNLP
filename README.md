@@ -29,6 +29,132 @@ verified, patched, regression-tested.
 
 ---
 
+# 🎯 **Bring Your Own Data. Bring Your Own Model.**
+
+amharicNLP is the **Amharic data and preprocessing layer** — not a
+collection of models. You bring your data, your labels, your task, your
+tokenizer, your model, your framework. amharicNLP handles the Amharic
+linguistic engineering in between.
+
+```
+     YOUR DATA  →  amharicNLP  →  YOUR MODEL
+   (any shape)     (Amharic         (any framework)
+                 preprocessing,
+                  validation,
+                   splitting,
+                    export)
+```
+
+```python
+from amharicNLP import AmharicDatasetProcessor
+
+processor = AmharicDatasetProcessor(task="classification")
+
+result = processor.process(
+    data=my_dataframe,            # or list, dict, JSON/CSV/JSONL path, HF Dataset
+    text_column="amharic_text",   # your column names
+    label_column="category",      # your labels
+)
+
+result.to_dataframe()       # → pandas
+result.to_hf_dataset()      # → Hugging Face
+result.export("train.jsonl")  # → disk
+result.split(stratify=True)   # → train/validation/test
+```
+
+### Three guarantees
+
+**1. Nothing is assumed.** Your column names, your label vocabulary.
+There is no built-in sentiment vocabulary, no required schema. Labels
+are *discovered* from your data:
+
+```python
+result.labels      # ['ጥያቄ', 'ቅሬታ', 'ጥቆማ']  — whatever you actually used
+result.label2id    # {'ጥያቄ': 0, 'ቅሬታ': 1, 'ጥቆማ': 2}
+```
+
+**2. Nothing destructive happens by default.** Stemming, stopword
+removal, and tokenizing are **off** unless you switch them on — they
+help a bag-of-words classifier and actively damage an LLM corpus or an
+ASR transcript. Results go to *new* columns, so your original text is
+always recoverable:
+
+```python
+processor = AmharicDatasetProcessor(
+    normalize=True, clean=True,      # on by default — safe, orthographic
+    tokenize=False, stem=False,      # off by default — destructive
+    remove_stopwords=False,
+)
+```
+
+Enable a destructive step on a text-fidelity task and the package says so:
+
+> `task='asr'` with stem enabled: these alter the text itself and
+> normally degrade ASR training data…
+
+**3. Nothing you didn't ask about is touched.** `speaker_id`, `domain`,
+`audio`, annotation spans — every column you didn't name passes through
+untouched.
+
+### Supported tasks
+
+| Task | What it prepares |
+|---|---|
+| `"classification"` | sentiment, topic, intent, spam, toxicity — **any** labels |
+| `"ner"` | token classification, BIO/BIOES, **any** entity types |
+| `"llm"` | pretraining, instruction tuning, chat, QA, generation |
+| `"asr"` | speech-to-text transcript side |
+| `"tts"` | text-to-speech text side |
+| `"generic"` | text processing with no structural assumptions |
+
+### Inspect before you train
+
+```python
+print(processor.inspect(my_data, text_column="text", label_column="label"))
+```
+
+```
+  total samples      : 12000
+  valid samples      : 11847
+  duplicates         : 153
+  label column       : label
+      'positive': 9200 (76.7%)
+      'negative': 2800 (23.3%)
+  imbalance ratio    : 3.3x
+  chars  avg/med/min/max : 84.2 / 71.0 / 3 / 1204
+  avg Amharic ratio      : 94.1%
+  warnings:
+      ! 153 duplicate text(s) (1.3% of dataset).
+      ! 412 sample(s) (3%) are less than 50% Amharic script
+```
+
+Problems are **reported, not silently deleted** — you decide. Pass
+`drop_invalid=True` when you want filtering.
+
+### Your framework, your choice
+
+No heavy dependency is mandatory. The core runs on the standard library:
+
+```bash
+pip install amharicNLP          # core — works alone
+pip install pandas              # only if you want DataFrames
+pip install torch               # only if you train in PyTorch
+pip install transformers datasets   # only if you use Hugging Face
+```
+
+Ask for something you haven't installed and you get a real answer, not a
+`ModuleNotFoundError`:
+
+> Exporting to a DataFrame needs the optional package 'pandas', which
+> isn't installed.
+>
+>     pip install pandas
+>
+> amharicNLP's core preprocessing works without it — this is an optional
+> integration, not a required dependency.
+
+---
+
 # ⚡ **Quick Start**
 
 ```python

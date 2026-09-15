@@ -6,9 +6,18 @@ from .subword import AmharicSubwordTokenizer
 from .speech import AmharicTTS, AmharicASR
 from .dataset_prep import AmharicDatasetPreprocessor
 from .corpus import AmharicCorpusProcessor, ValidationReport
-from .llm_dataset import AmharicLLMDatasetValidator, LLMValidationReport
+from .llm_dataset import (
+    AmharicLLMDatasetValidator, LLMValidationReport,
+    AmharicLLMDatasetProcessor, LLMPreparedDataset,
+)
 from .audio_dataset import AmharicAudioDatasetProcessor, SplitResult as AudioSplitResult
 from .voice_pipeline import AmharicVoicePipeline, VoiceTurnResult
+
+# --- Bring-Your-Own-Data / Bring-Your-Own-Model layer ----------------------
+from .processor import AmharicDatasetProcessor, ProcessingResult, TASKS
+from .inspection import inspect_dataset, DatasetReport
+from .io_adapters import to_records, to_records_dict, export, EXPORT_FORMATS
+from ._optional import OptionalDependencyError, have as has_optional_dependency
 
 # NOTE: amharicNLP.example is intentionally NOT imported here. It used to be
 # ("from .example import *"), but example/test.py runs a full demo pipeline

@@ -349,3 +349,169 @@ class AmharicLLMDatasetValidator:
         clean = [rec for i, rec in enumerate(records) if i not in drop]
         report.kept = len(clean)
         return clean, report
+
+
+class AmharicLLMDatasetProcessor:
+    """
+    Prepare a developer-owned Amharic LLM dataset end to end: normalize
+    the text, validate the structure, and export in whatever shape their
+    training code wants.
+
+        from amharicNLP import AmharicLLMDatasetProcessor
+
+        processor = AmharicLLMDatasetProcessor()
+        dataset = processor.prepare(my_dataset)
+        dataset.export("train.jsonl")
+
+    This pairs the text-level Amharic processing in
+    `AmharicDatasetProcessor` with the structural checks in
+    `AmharicLLMDatasetValidator` above, which is the combination LLM data
+    actually needs -- normalization alone misses broken conversations,
+    and validation alone leaves the orthography inconsistent.
+
+    Supports pretraining corpora (plain text), instruction data,
+    prompt/completion pairs, QA, and single- or multi-turn chat. No
+    tokenizer, architecture, or training framework is assumed: the output
+    is plain records the developer takes wherever they want.
+
+    Normalization here is deliberately conservative -- abbreviation
+    expansion is left off and stemming/stopword removal are unavailable,
+    because an LM should learn the language as actually written. Cleaning
+    up character variants and whitespace is wanted; rewriting words is not.
+    """
+
+    #: Fields whose values are natural-language text to be normalized.
+    #: Everything else in a record (ids, metadata, scores) passes through.
+    TEXT_FIELDS = (
+        "text", "instruction", "input", "output", "prompt", "completion",
+        "response", "question", "answer", "system",
+    )
+
+    def __init__(self, normalize: bool = True, clean: bool = True,
+                 max_chars: int = 8000, min_response_chars: int = 1,
+                 normalize_options: Optional[Dict[str, Any]] = None):
+        from .processor import AmharicDatasetProcessor
+
+        self._text_proc = AmharicDatasetProcessor(
+            task="llm", normalize=normalize, clean=clean,
+            normalize_options={"expand_abbr": False, **(normalize_options or {})},
+        )
+        self.validator = AmharicLLMDatasetValidator(
+            max_chars=max_chars, min_response_chars=min_response_chars
+        )
+
+    def _normalize_value(self, value: Any) -> Any:
+        """Normalize a string; recurse into the message lists that chat
+        formats use. Non-text values are returned untouched."""
+        if isinstance(value, str):
+            return self._text_proc.process_text(value)["text"]
+        if isinstance(value, list):
+            return [self._normalize_value(v) for v in value]
+        if isinstance(value, dict):
+            out = dict(value)
+            for key in ("content", "value"):
+                if key in out and isinstance(out[key], str):
+                    out[key] = self._normalize_value(out[key])
+            return out
+        return value
+
+    def normalize_records(self, records):
+        """Normalize every recognized text field, in place on copies."""
+        out = []
+        for rec in records:
+            new_rec = dict(rec)
+            for key in list(new_rec.keys()):
+                if key in self.TEXT_FIELDS or key in ("messages", "conversations"):
+                    new_rec[key] = self._normalize_value(new_rec[key])
+            out.append(new_rec)
+        return out
+
+    def prepare(self, data, validate: bool = True, drop_invalid: bool = False,
+                check_language_contamination: bool = False):
+        """
+        Normalize and validate `data` (anything `io_adapters.to_records`
+        accepts), returning an `LLMPreparedDataset`.
+
+        `drop_invalid=False` (default) keeps every record and reports
+        problems -- consistent with the rest of the package: warn, don't
+        silently delete the developer's data. Set True to filter.
+        """
+        from . import io_adapters
+
+        records = io_adapters.to_records(data)
+        records = self.normalize_records(records)
+
+        report = None
+        if validate:
+            if drop_invalid:
+                records, report = self.validator.process(
+                    records, check_language_contamination=check_language_contamination
+                )
+            else:
+                report = self.validator.validate(
+                    records, check_language_contamination=check_language_contamination
+                )
+        return LLMPreparedDataset(records=records, report=report)
+
+
+class LLMPreparedDataset:
+    """Result of `AmharicLLMDatasetProcessor.prepare()` -- processed
+    records plus the validation report, convertible to any format."""
+
+    def __init__(self, records, report=None):
+        self.records = records
+        self.report = report
+
+    def __len__(self):
+        return len(self.records)
+
+    def __iter__(self):
+        return iter(self.records)
+
+    def __getitem__(self, idx):
+        return self.records[idx]
+
+    def to_records(self):
+        return [dict(r) for r in self.records]
+
+    def to_dataframe(self):
+        from . import io_adapters
+        return io_adapters.export(self.records, "dataframe")
+
+    def to_hf_dataset(self):
+        from . import io_adapters
+        return io_adapters.export(self.records, "hf_dataset")
+
+    def export(self, path: str, fmt: Optional[str] = None, **kwargs):
+        from . import io_adapters
+        import os
+        if fmt is None:
+            ext = os.path.splitext(path)[1].lower().lstrip(".")
+            fmt = {"ndjson": "jsonl", "tab": "tsv", "text": "txt"}.get(ext, ext)
+        return io_adapters.export(self.records, fmt, path=path, **kwargs)
+
+    def split(self, ratios=(0.8, 0.1, 0.1), seed: Optional[int] = 42):
+        """Split into train/validation/test, then check that no eval
+        example leaked into train -- worth doing after any split of LLM
+        data, where duplicated examples across splits silently inflate
+        eval scores."""
+        import random
+
+        if abs(sum(ratios) - 1.0) > 1e-6:
+            raise ValueError(f"ratios must sum to 1.0, got {sum(ratios)}")
+        names = ["train", "test"] if len(ratios) == 2 else ["train", "validation", "test"]
+
+        items = list(self.records)
+        random.Random(seed).shuffle(items)
+        n, out, start = len(items), {}, 0
+        for i, (name, ratio) in enumerate(zip(names, ratios)):
+            end = n if i == len(ratios) - 1 else start + int(round(n * ratio))
+            out[name] = items[start:end]
+            start = end
+        return out
+
+    def summary(self) -> str:
+        lines = [f"LLMPreparedDataset({len(self.records)} records)"]
+        if self.report is not None:
+            lines.append(self.report.summary())
+        return "\n".join(lines)

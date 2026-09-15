@@ -210,3 +210,75 @@ class TestValidateAndProcess:
     def test_summary_is_string(self, v):
         report = v.validate([{"instruction": "x", "output": "ok"}])
         assert "kept: 1/1" in report.summary()
+
+
+class TestAmharicLLMDatasetProcessor:
+    """The BYOD wrapper: normalize + validate + export in one object."""
+
+    def _proc(self):
+        from amharicNLP.llm_dataset import AmharicLLMDatasetProcessor
+        return AmharicLLMDatasetProcessor()
+
+    def test_prepare_normalizes_instruction_fields(self):
+        ds = self._proc().prepare([{"instruction": "ተርጉም!!!", "output": "ሰላም  ነው"}])
+        assert ds.records[0]["output"] == "ሰላም ነው"
+
+    def test_prepare_keeps_latin_in_translation_data(self):
+        # Regression: cleaning used to strip all Latin, silently emptying
+        # the source side of a translation pair.
+        ds = self._proc().prepare(
+            [{"instruction": "ተርጉም", "input": "Hello", "output": "ሰላም"}]
+        )
+        assert ds.records[0]["input"] == "Hello"
+
+    def test_prepare_normalizes_chat_message_content(self):
+        ds = self._proc().prepare([{"messages": [
+            {"role": "user", "content": "ሰላም!!!"},
+            {"role": "assistant", "content": "እንዴት ልረዳህ"},
+        ]}])
+        assert ds.records[0]["messages"][0]["content"] == "ሰላም ! ! !"
+        assert ds.records[0]["messages"][0]["role"] == "user"   # role untouched
+
+    def test_prepare_preserves_unknown_metadata_columns(self):
+        ds = self._proc().prepare(
+            [{"instruction": "ሀ", "output": "ለ", "source_id": 42, "score": 0.9}]
+        )
+        assert ds.records[0]["source_id"] == 42
+        assert ds.records[0]["score"] == 0.9
+
+    def test_prepare_reports_without_dropping_by_default(self):
+        ds = self._proc().prepare([{"instruction": "ሀ", "output": ""}])
+        assert len(ds) == 1                       # kept
+        assert ds.report.empty_response_indices == [0]   # but reported
+
+    def test_prepare_can_drop_invalid_on_request(self):
+        ds = self._proc().prepare(
+            [{"instruction": "ሀ", "output": ""}, {"instruction": "ለ", "output": "መልስ"}],
+            drop_invalid=True,
+        )
+        assert len(ds) == 1
+
+    def test_prepare_accepts_a_list_of_plain_strings(self):
+        ds = self._proc().prepare(["ሰላም ለዓለም", "ደህና ነህ"])
+        assert len(ds) == 2
+
+    def test_export_jsonl(self, tmp_path):
+        p = tmp_path / "train.jsonl"
+        ds = self._proc().prepare([{"instruction": "ሀ", "output": "ለ"}])
+        ds.export(str(p))
+        assert p.exists()
+
+    def test_split_sums_to_total(self):
+        ds = self._proc().prepare(
+            [{"instruction": f"ጥያቄ {i}", "output": f"መልስ {i}"} for i in range(20)]
+        )
+        s = ds.split((0.8, 0.1, 0.1))
+        assert sum(len(v) for v in s.values()) == 20
+
+    def test_len_iter_getitem(self):
+        ds = self._proc().prepare([{"instruction": "ሀ", "output": "ለ"}])
+        assert len(ds) == 1 and ds[0]["instruction"] == "ሀ" and len(list(ds)) == 1
+
+    def test_summary_is_a_string(self):
+        ds = self._proc().prepare([{"instruction": "ሀ", "output": "ለ"}])
+        assert "LLMPreparedDataset" in ds.summary()
