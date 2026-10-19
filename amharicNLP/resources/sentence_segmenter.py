@@ -108,21 +108,11 @@ class AmharicSentenceSegmenter:
 
     def split_with_offsets(self, text: str) -> List[Sentence]:
         """Split text into sentences, returning (text, start, end) tuples
-        with offsets into the original `text` (whitespace-trimmed per
-        sentence, offsets untrimmed -- i.e. `text[start:end]` may have
-        leading/trailing whitespace that `.text` has already stripped)."""
+        with offsets into the original `text`. Sentence text is whitespace-
+        trimmed and normalizes '፡፡' to '።', so it may differ from the
+        original slice at those markers."""
         if not text:
             return []
-
-        # "፡፡" (doubled wordspace) is a full stop -- normalize it to a
-        # single '።' first so the boundary logic below only has to know
-        # about one hard terminator, not two. This only changes the
-        # segmentation view of the string; offsets are recomputed against
-        # this normalized copy since a 2-char marker becoming 1 char would
-        # otherwise desync offsets -- callers wanting *original*-string
-        # offsets should avoid text containing '፡፡' or accept this
-        # normalization.
-        text = re.sub(r'፡፡', '።', text)
 
         protected = self._protected_spans(text)
         n = len(text)
@@ -131,6 +121,10 @@ class AmharicSentenceSegmenter:
         i = 0
         while i < n:
             ch = text[i]
+            if text.startswith('፡፡', i):
+                boundaries.append(i + 2)
+                i += 2
+                continue
             if ch in self.HARD_TERMINATORS:
                 boundaries.append(i + 1)
             elif ch in self.SOFT_TERMINATORS:
@@ -161,7 +155,7 @@ class AmharicSentenceSegmenter:
                 lead_ws = len(raw) - len(raw.lstrip())
                 trail_ws = len(raw) - len(raw.rstrip())
                 sentences.append(Sentence(
-                    text=stripped,
+                    text=stripped.replace('፡፡', '።'),
                     start=start + lead_ws,
                     end=end - trail_ws,
                 ))

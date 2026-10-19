@@ -49,9 +49,17 @@ class TestAmharicSentenceSegmenter:
         result = self.seg.split_with_offsets("ሰላም። ደህና ነህ።")
         assert all(isinstance(s, Sentence) for s in result)
         assert [s.text for s in result] == ["ሰላም።", "ደህና ነህ።"]
-        # Offsets index back into the (post ፡፡->። normalization) text.
+        # Offsets index back into the original text.
         for s in result:
             assert s.text == "ሰላም። ደህና ነህ።"[s.start:s.end]
+
+    def test_doubled_wordspace_offsets_index_original_text(self):
+        text = "  እሱ ደወለ፡፡  እሺ አልኩ፡፡ "
+        result = self.seg.split_with_offsets(text)
+        assert [s.text for s in result] == ["እሱ ደወለ።", "እሺ አልኩ።"]
+        assert [text[s.start:s.end] for s in result] == [
+            "እሱ ደወለ፡፡", "እሺ አልኩ፡፡",
+        ]
 
     def test_trims_whitespace_between_sentences(self):
         result = self.seg.split("ሰላም።    ደህና ነህ።")
